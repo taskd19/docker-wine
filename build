@@ -56,9 +56,9 @@ get_os_codename () {
         retval=${os_codenames[0]}     # latest Ubuntu version
     fi
 
-    # TEMPORARY WORKAROUND - use 'eoan' as issues with installs using 'focal'
-    # and 'groovy' fails to install wine
-    retval="eoan"
+    # # TEMPORARY WORKAROUND - use 'eoan' as issues with installs using 'focal'
+    # # and 'groovy' fails to install wine
+    # retval="eoan"
 
     # Return the OS codename to use
     echo "${retval}"
@@ -72,7 +72,7 @@ BUILD_ARGS=("$@")
 BUILD_CMD="docker build"
 DOCKER_REPO="${DOCKER_REPO:-docker-wine}"
 NO_RDP="${NO_RDP:-no}"
-WINE_BRANCH="${WINE_BRANCH:-stable}"
+WINE_BRANCH="${WINE_BRANCH:-devel}"
 
 # Get the codename for latest version of wine-${WINE-BRANCH}
 UBUNTU_CODENAME="$(get_os_codename "${WINE_BRANCH}")"
@@ -88,10 +88,10 @@ fi
 # Use standard Ubuntu image if using NO_RDP
 if is_enabled "${NO_RDP}"; then
     BASE_IMAGE="ubuntu"
-    TAG="${UBUNTU_CODENAME}"
+    # TAG="${UBUNTU_CODENAME}"
 elif is_disabled "${NO_RDP}"; then
     BASE_IMAGE="scottyhardy/docker-remote-desktop"
-    TAG="ubuntu-${UBUNTU_CODENAME}"
+    # TAG="ubuntu-${UBUNTU_CODENAME}"
 else
     echo "ERROR: Invalid value '${NO_RDP}' used for NO_RDP"
     exit 1
@@ -108,6 +108,6 @@ fi
 
 ${BUILD_CMD} "${BUILD_ARGS[@]}" \
     --build-arg="BASE_IMAGE=${BASE_IMAGE}" \
-    --build-arg="TAG=${TAG}" \
+    --build-arg="TAG=${TAG:-focal}" \
     --build-arg="WINE_BRANCH=${WINE_BRANCH}" \
     -t "${DOCKER_REPO}" .
